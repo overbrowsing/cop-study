@@ -73,24 +73,11 @@ Attendee figures are sourced from [UNFCCC's in-session participant data](https:/
 4. **Run the Python Scripts**:
 
     #### Full Page Size and CO₂ Emissions
-    **run.py**: This script calculates the full page size of all webpages listed in dataset.csv and saves the results to results.csv.
+    **[`run.py`](/scripts/run.py)**: This script calculates the size of each webpage listed in the [`dataset.csv`](/data/dataset.csv) file and saves the results as a CSV file titled [`results.csv`](/data/results.csv), located in the [`data`](/data/) directory. The script will also generate a chart based on the final CO₂e emissions results.
 
     ```bash
     python run.py
     ```
-
-5. **View the Results**:
-
-    The results of the analysis, including the full page size and CO₂ emissions for each webpage, are saved in the `results.csv` file located in the `data/processed/` directory.
-
-    #### Generate Graph
-    **graph.py**: This script generates a graph based on the results and saves it as `results_graph.png` in the `results/` directory.
-
-    ```bash
-    python graph.py
-    ```
-
-    The graph visualizes the CO₂ emissions of the COP host country websites over the years.
 
 ## Contributing
 
