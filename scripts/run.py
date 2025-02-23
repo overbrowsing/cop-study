@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 PERCENTAGE_REDUCTION = 8.5 # Reduce Wayback Machine total size by 8.5%
-REDUCTION_BYTES = 1600 # Subtract 1600 bytes from HTML Documents, Stylesheets and Scripts to account for comments
+REDUCTION_BYTES_HTML = 800 # Subtract bytes from HTML Documents to account for Wayback Machine
+REDUCTION_BYTES_STYLESHEETS = 800 # Subtract bytes from Stylesheets to account for Wayback Machine
+REDUCTION_BYTES_SCRIPTS = 1500 # Subtract bytes Scripts to account for Wayback Machine
 
 # Function to modify the Wayback Machine URL using the API by adding 'if_' to hide the Wayback Machine toolbar
 def modify_wayback_machine_url(url):
@@ -65,7 +67,7 @@ def intercept_response(response, seen_urls, resource_sizes):
     resource_sizes["Other"] += size
 
 # Function to get full page size
-def get_full_page_size(url, percentage_reduction=PERCENTAGE_REDUCTION, reduction_bytes=REDUCTION_BYTES):
+def get_full_page_size(url, percentage_reduction=PERCENTAGE_REDUCTION, reduction_bytes_html=REDUCTION_BYTES_HTML, reduction_bytes_stylesheets=REDUCTION_BYTES_STYLESHEETS, reduction_bytes_scripts=REDUCTION_BYTES_SCRIPTS):
   url = modify_wayback_machine_url(url)
 
   with sync_playwright() as p:
@@ -97,9 +99,9 @@ def get_full_page_size(url, percentage_reduction=PERCENTAGE_REDUCTION, reduction
       total_size *= (1 - percentage_reduction / 100)
 
       # Subtract bytes from Document, Script, and Stylesheet
-      resource_sizes["Document"] = max(0, resource_sizes["Document"] - reduction_bytes)
-      resource_sizes["Script"] = max(0, resource_sizes["Script"] - reduction_bytes)
-      resource_sizes["Stylesheet"] = max(0, resource_sizes["Stylesheet"] - reduction_bytes)
+      resource_sizes["Document"] = max(0, resource_sizes["Document"] - reduction_bytes_html)
+      resource_sizes["Script"] = max(0, resource_sizes["Script"] - reduction_bytes_scripts)
+      resource_sizes["Stylesheet"] = max(0, resource_sizes["Stylesheet"] - reduction_bytes_stylesheets)
 
   return total_size, resource_sizes
 
@@ -113,7 +115,7 @@ def numeric_to_letter_rating(numeric_rating):
 # Function to display progress bar
 def display_progress_bar(processed_pages, total_pages, page_url):
   progress = int((processed_pages / total_pages) * 40)
-  bar = f"[{'█' * progress}{'-' * (40 - progress)}] {int((processed_pages / total_pages) * 100)}%"
+  bar = f"[{'█' * progress}{'-' * (40 - progress)}] {int((processed_pages / total_pages) * 100)}% Completed | Analysising '{page_url}' webpages" 
   print(bar, end='\r')
 
 # Function to plot CO2 emissions chart
@@ -127,23 +129,16 @@ def plot_co2_chart(website_co2_data):
 
   plt.figure(figsize=(10, 6))
 
-  min_dot_size = 4
-  max_dot_size = 4
-  avg_dot_size = 8
-  min_dot_color = 'black'
-  max_dot_color = 'black'
-  avg_dot_color = 'black'
-
-  # Plot the data as a chart
   for i in range(len(websites)):
     if min_co2[i] is not None and max_co2[i] is not None and avg_co2[i] is not None:
       plt.plot([x[i], x[i]], [min_co2[i], max_co2[i]], color='black', lw=1)
-      plt.plot(x[i], min_co2[i], 'o', markersize=min_dot_size, color=min_dot_color)
-      plt.plot(x[i], avg_co2[i], 'o', markersize=avg_dot_size, color=avg_dot_color)
-      plt.plot(x[i], max_co2[i], 'o', markersize=max_dot_size, color=max_dot_color)
+      plt.plot(x[i], avg_co2[i], 's', markersize=10, color='grey', label='Avg')
+      plt.plot(x[i], min_co2[i], 'o', markersize=4, color='black', label='Min/Max')
+      plt.plot(x[i], max_co2[i], 'o', markersize=4, color='black')
 
   plt.xticks(x, websites, rotation=45, ha='right')
   plt.ylabel('CO₂e (grams)')
+  plt.legend()
   plt.tight_layout()
   plt.show()
 
