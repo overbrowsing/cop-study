@@ -20,7 +20,7 @@ def modify_wayback_machine_url(url):
       return new_url
   return url
 
-# Function to get CO₂e and Ratings based on total page size using the Website Carbon API (https://api.websitecarbon.com)
+# Function to get CO₂e and Ratings based on total webpage size using the Website Carbon API (https://api.websitecarbon.com)
 def get_co2_emissions(total_size_bytes):
   api_url = f"https://api.websitecarbon.com/data?bytes={total_size_bytes}&green=0"
   response = requests.get(api_url)
@@ -66,7 +66,7 @@ def intercept_response(response, seen_urls, resource_sizes):
   else:
     resource_sizes["Other"] += size
 
-# Function to get full page size
+# Function to get full webpage size
 def get_full_page_size(url, percentage_reduction=PERCENTAGE_REDUCTION, reduction_bytes_html=REDUCTION_BYTES_HTML, reduction_bytes_stylesheets=REDUCTION_BYTES_STYLESHEETS, reduction_bytes_scripts=REDUCTION_BYTES_SCRIPTS):
   url = modify_wayback_machine_url(url)
 
@@ -86,9 +86,10 @@ def get_full_page_size(url, percentage_reduction=PERCENTAGE_REDUCTION, reduction
     page.on("response", lambda response: intercept_response(response, seen_urls, resource_sizes))
 
     try:
-      page.goto(url, wait_until="networkidle", timeout=60000)
+      page.goto(url, wait_until="networkidle", timeout=240000)
     except Exception as e:
       print(f"Error during page load: {e}")
+      return 0, resource_sizes  # Return 0 size if there is an error
     finally:
       browser.close()
 
@@ -115,7 +116,7 @@ def numeric_to_letter_rating(numeric_rating):
 # Function to display progress bar
 def display_progress_bar(processed_pages, total_pages, page_url):
   progress = int((processed_pages / total_pages) * 40)
-  bar = f"[{'█' * progress}{'-' * (40 - progress)}] {int((processed_pages / total_pages) * 100)}% Completed | Analysising '{page_url}' webpages" 
+  bar = f"[{'█' * progress}{'-' * (40 - progress)}] {int((processed_pages / total_pages) * 100)}% Completed" 
   print(bar, end='\r')
 
 # Function to plot CO2 emissions chart
@@ -176,16 +177,19 @@ def main(dataset_file="./data/dataset.csv", output_file="./data/results.csv", pe
     min_co2 = float('inf')
     max_co2 = float('-inf')
 
-    # Count the total number of pages for the website (Pages 1 to 20)
+    # Count the total number of webpages for the website (Webpages 1 to 20)
     for page_num in range(1, 21):
       if website_data.get(f"Page {page_num}"):
         total_pages += 1
 
-    # Process the pages for this particular website
+    # Process the webpages for this particular website
     for page_num in range(1, 21):
       page_url = website_data.get(f"Page {page_num}")
       if page_url:
         total_size, resource_sizes = get_full_page_size(page_url, percentage_reduction)
+        if total_size == 0:
+          continue  # Skip this webpage if there was an error
+
         co2e, rating = get_co2_emissions(total_size)
         
         min_co2 = min(min_co2, co2e)
@@ -200,13 +204,16 @@ def main(dataset_file="./data/dataset.csv", output_file="./data/results.csv", pe
 
         # Percentage breakdowns
         total_kb = total_size / 1024
-        html_percentage = round(html_size_kb / total_kb * 100, 1)
-        stylesheet_percentage = round(stylesheet_size_kb / total_kb * 100, 1)
-        script_percentage = round(script_size_kb / total_kb * 100, 1)
-        image_percentage = round(image_size_kb / total_kb * 100, 1)
-        other_percentage = round(other_size_kb / total_kb * 100, 1)
+        if total_kb > 0:
+          html_percentage = round(html_size_kb / total_kb * 100, 1)
+          stylesheet_percentage = round(stylesheet_size_kb / total_kb * 100, 1)
+          script_percentage = round(script_size_kb / total_kb * 100, 1)
+          image_percentage = round(image_size_kb / total_kb * 100, 1)
+          other_percentage = round(other_size_kb / total_kb * 100, 1)
+        else:
+          html_percentage = stylesheet_percentage = script_percentage = image_percentage = other_percentage = 0
 
-        # Add page data to results
+        # Add webpage data to results
         results.append([
           website,
           page_url,
@@ -248,15 +255,21 @@ def main(dataset_file="./data/dataset.csv", output_file="./data/results.csv", pe
       average_co2e = round(co2_sum / processed_pages, 3)
 
       average_html_size = round(html_size_sum / processed_pages, 2)
-      average_html_percentage = round(html_percentage_sum / processed_pages, 1)
       average_stylesheet_size = round(stylesheet_size_sum / processed_pages, 2)
-      average_stylesheet_percentage = round(stylesheet_percentage_sum / processed_pages, 1)
       average_script_size = round(script_size_sum / processed_pages, 2)
-      average_script_percentage = round(script_percentage_sum / processed_pages, 1)
       average_image_size = round(image_size_sum / processed_pages, 2)
-      average_image_percentage = round(image_percentage_sum / processed_pages, 1)
       average_other_size = round(other_size_sum / processed_pages, 2)
-      average_other_percentage = round(other_percentage_sum / processed_pages, 1)
+
+      total_avg_size = average_html_size + average_stylesheet_size + average_script_size + average_image_size + average_other_size
+
+      if total_avg_size > 0:
+        average_html_percentage = round((average_html_size / total_avg_size) * 100, 1)
+        average_stylesheet_percentage = round((average_stylesheet_size / total_avg_size) * 100, 1)
+        average_script_percentage = round((average_script_size / total_avg_size) * 100, 1)
+        average_image_percentage = round((average_image_size / total_avg_size) * 100, 1)
+        average_other_percentage = round((average_other_size / total_avg_size) * 100, 1)
+      else:
+        average_html_percentage = average_stylesheet_percentage = average_script_percentage = average_image_percentage = average_other_percentage = 0
 
       average_numeric_rating = round(sum([{
         "A+": 1, "A": 2, "B": 3, "C": 4, "D": 5, "E": 6, "F": 7
@@ -286,7 +299,7 @@ def main(dataset_file="./data/dataset.csv", output_file="./data/results.csv", pe
   with open(output_file, mode='w', newline='', encoding='utf-8') as f:
     writer = csv.writer(f)
     writer.writerow([
-      "Website", "Page URL", "Total Size (KB)", "CO₂e (grams)", "Rating", "HTML (KB)", "HTML (%)",
+      "Website", "Webpage URL", "Total Size (KB)", "CO2e (grams)", "Rating", "HTML (KB)", "HTML (%)",
       "Stylesheets (KB)", "Stylesheets (%)", "Scripts (KB)", "Scripts (%)", "Images (KB)", "Images (%)",
       "Other (KB)", "Other (%)"
     ])
