@@ -1,8 +1,8 @@
-# An Analysis of UNFCCC COP Host Country Websites (1995–2024)
+# An Analysis of UNFCCC COP Host Country Websites (1995–2025)
 
 ## Overview
 
-This repository contains the code for the study *[The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2024)]()*. The study evaluates the potential growth and environmental impact of COP host country websites by analysing webpage size and composition. We use the Wayback Machine to retrieve webpages and the [Website Carbon API](https://api.websitecarbon.com) to calculate CO₂e emissions, which uses v3 of the [Sustainable Web Design Model](https://sustainablewebdesign.org/estimating-digital-emissions/), a collaborative open-source initiative.
+This repository contains the code for the study *[The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2025)]()*. The study evaluates the potential growth and environmental impact of COP host country websites by analysing webpage size and composition. We use the Wayback Machine to retrieve webpages and the [Website Carbon API](https://api.websitecarbon.com) to calculate CO₂e emissions, which uses v3 of the [Sustainable Web Design Model](https://sustainablewebdesign.org/estimating-digital-emissions/), a collaborative open-source initiative.
 
 The Python script developed for this study utilises Playwright to load pages within Chromium and capture resource sizes. Since the [Wayback Machine's API](https://web.archive.org/web/20130329115724/http://faq.web.archive.org/page-without-wayback-code/) for viewing unmodified webpages does not account for content delivered by third parties or CDNs, it was not possible to use it for calculating the total webpage size. We account for the additional size introduced by the Wayback Machine's archiving process, as well as the resources and scripts included by the Wayback Machine that may not have been present on the original site. For further details, please refer to the research paper (Section 4.7) for a complete description of our data collection and standardisation methodology.
 
@@ -43,6 +43,7 @@ Attendee figures are sourced from the [UNFCCC's COP in-session participant data]
 | **COP27** | 🇪🇬 Sharm El-Sheikh, Egypt               | 06.11.2022 - 18.11.2022 | 36,674     | [Snapshot 06.11.2022](https://web.archive.org/web/20221106043724if_/cop27.eg/#/)                                 | [No](https://cop27.eg) 🌱                                  |
 | **COP28** | 🇦🇪 Dubai, United Arab Emirates          | 30.11.2023 - 12.12.2023 | 70,002     | [Snapshot 30.11.2023](https://web.archive.org/web/20231130020512if_/cop28.com/)                                  | [No](https://cop28.com) 🌱                                 |
 | **COP29** | 🇦🇿 Baku, Azerbaijan                     | 11.11.2024 - 22.11.2024 | 40,335     | [Snapshot 11.11.2024](https://web.archive.org/web/20241111035138if_/cop29.az/en/home)                            | [Yes](https://cop29.az) 🌱                                 |
+| **COP30** | 🇧🇷 Belém, Brazil                        | 10.11.2025 — 21.11.2025 | N/A        | [Snapshot 21.02.2025](https://web.archive.org/web/20250221171752if_/cop30.br/en)                                 | [Yes](https://cop30.br)                                   |
 
 *🌱 Marks websites hosted on renewable energy, checked via [The Green Web Foundation](https://thegreenwebfoundation.org) or inferred from available sources.*
 
