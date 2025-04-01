@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2025). The study evaluates the potential growth and environmental impact of COP host country websites by analysing the size and composition of webpages archived through the Wayback Machine, using a proposed method for this analysis.
+This repository contains the code for the study *The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2025)*. The study evaluates the potential growth and environmental impact of COP host country websites by analysing the size and composition of webpages archived through the Wayback Machine, using a proposed method for this analysis.
 
 The Python script developed for this study utilises Playwright to load pages within Chromium and capture resource sizes. Since the [Wayback Machine's API](https://web.archive.org/web/20130329115724/http://faq.web.archive.org/page-without-wayback-code/) for viewing unmodified webpages does not account for content delivered by third parties or CDNs, it was not possible to use it for calculating the total webpage size. We account for the additional size introduced by the Wayback Machine's archiving process, as well as the resources and scripts included by the Wayback Machine (see Section 4.7) that may not have been present on the original site.
 
