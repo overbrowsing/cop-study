@@ -1,4 +1,4 @@
-# The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2025).
+# UNFCCC COP Host Country Websites Study
 
 ## Overview
 
