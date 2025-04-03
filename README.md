@@ -2,10 +2,43 @@
 
 ## Overview
 
-This repository contains the code for the study *The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2025)*. The study evaluates the potential growth and environmental impact of COP host country websites by analysing the size and composition of webpages archived through the Wayback Machine, using a proposed method for this analysis.
+This is the repository contains the code for the study *The Environmental Impact of COP Websites: An Analysis of UNFCCC COP Host Country Websites (1995-2025)*. The study evaluates the potential growth and environmental impact of COP host country websites by analysing the size and composition of webpages archived through the Wayback Machine, using a proposed method for this analysis.
 
 The Python script developed for this study utilises Playwright to load pages within Chromium and capture resource sizes. Since the [Wayback Machine's API](https://web.archive.org/web/20130329115724/http://faq.web.archive.org/page-without-wayback-code/) for viewing unmodified webpages does not account for content delivered by third parties or CDNs, it was not possible to use it for calculating the total webpage size. We account for the additional size introduced by the Wayback Machine's archiving process, as well as the resources and scripts included by the Wayback Machine (see Section 4.7) that may not have been present on the original site.
 
+## How to Repeat the Study
+
+### Prerequisites
+
+- Python installed on your machine.
+
+### Steps
+
+1. **Clone the Repository**:
+    ```bash
+    git clone https://github.com/overbrowsing/cop-study
+    cd cop-study
+    ```
+
+2. **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. **Install Playwright**:
+    ```bash
+    playwright install
+    ```
+
+4. **Run the Python Scripts**:
+
+    #### Full Page Size and CO₂ Emissions
+    **[`run.py`](/scripts/run.py)**: This script calculates the size of each webpage listed in the [`dataset.csv`](/data/dataset.csv) file and saves the results as a CSV file titled [`results.csv`](/data/results.csv), located in the [`data`](/data/) directory. The script will also generate a chart based on the final CO₂e emissions results.
+
+    ```bash
+    python run.py
+    ```
+    
 ## Dataset
 
 The URLs of COP host country websites were retrieved using the Wayback Machine, regardless of whether the site was still active. The earliest available snapshot from the event's start date was selected, or the closest alternative if none was available, excluding those marked as green in the Wayback Machine interface, which indicate redirects (3xx). The snapshot date was recorded in the dataset. This approach ensures that websites are assessed at their peak operational state, as some may be updated throughout the conference. For instance, the COP28 host country website was modified following [scrutiny](https://www.abc.net.au/news/2023-10-31/un-cop28-climate-summit-accused-greenwashing-website-low-carbon/103020978).
@@ -46,39 +79,6 @@ Attendee figures are sourced from the [UNFCCC's COP in-session participant data]
 | **COP30** | 🇧🇷 Belém, Brazil                        | 10.11.2025 — 21.11.2025 | N/A        | [Snapshot 21.02.2025](https://web.archive.org/web/20250221171752if_/cop30.br/en)                                 | [Yes](https://cop30.br)                                   |
 
 *🌱 Marks websites hosted on renewable energy, checked via [The Green Web Foundation](https://thegreenwebfoundation.org) or inferred from available sources.*
-
-## How to Repeat the Study
-
-### Prerequisites
-
-- Python installed on your machine.
-
-### Steps
-
-1. **Clone the Repository**:
-    ```bash
-    git clone https://github.com/overbrowsing/cop-study
-    cd cop-study
-    ```
-
-2. **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. **Install Playwright**:
-    ```bash
-    playwright install
-    ```
-
-4. **Run the Python Scripts**:
-
-    #### Full Page Size and CO₂ Emissions
-    **[`run.py`](/scripts/run.py)**: This script calculates the size of each webpage listed in the [`dataset.csv`](/data/dataset.csv) file and saves the results as a CSV file titled [`results.csv`](/data/results.csv), located in the [`data`](/data/) directory. The script will also generate a chart based on the final CO₂e emissions results.
-
-    ```bash
-    python run.py
-    ```
 
 ## Contributing
 
